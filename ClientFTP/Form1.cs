@@ -24,7 +24,7 @@ namespace ClientFTP
             Host_textBox.Text = "ftp.lip6.fr";
             Port_textBox.Text = "21";
             UserID_textBox.Text = "anonymous";
-            Password_textBox.Text = "toto";
+            Password_textBox.Text = "";
 
         }
 

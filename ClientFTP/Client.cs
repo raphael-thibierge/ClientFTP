@@ -39,8 +39,6 @@ namespace ClientFTP
             // ============= ISSUE DU PROJET POP3 ==============
             // get IP adress and connect
 
-
-
             //(AddressFamily.InterNetwork,SocketType.Stream,ProtocolType.Tcp);
             IPAddress adresse = IPAddress.Parse("127.0.0.1");
             //IPAddress adresse;
@@ -61,17 +59,16 @@ namespace ClientFTP
             {
                 return false;
             }
-
-            // ============= END ==============
-   
             _clientSocket.Connect(adresse, 21);
             if (_clientSocket.Connected)
             {
                 // connexion ok,setting streams to read and write
                 _sr = new StreamReader(_clientSocket.GetStream(), Encoding.Default);
                 _sw = new StreamWriter(_clientSocket.GetStream(), Encoding.Default);
-
+                _sw.AutoFlush = true;
+                
                 _sw.WriteLine("USER " + _userID);
+
                 _sw.WriteLine("PASS " + _password);
                 
 
@@ -80,24 +77,27 @@ namespace ClientFTP
                     _sw.WriteLine("PASV");
                 }
 
-                while (!_sr.EndOfStream)
+                string ligne = _sr.ReadLine();
+                while (!_sr.EndOfStream || ligne=="")
                 {
-                    if (_sr.ReadLine().Contains("220"))
+                    Console.WriteLine(ligne);
+                    if (ligne.Contains("503") || ligne.Contains("530") || ligne.Contains("500"))
+                    {
+                        Console.WriteLine("Erreur saisi");
+                        return false;
+                    }
+                    if (ligne.Contains("230"))
                     {
                         Console.WriteLine("Co OK !");
-                        break;
+                        Console.WriteLine("END 1");
+                        return true;
                     }
+                    ligne = _sr.ReadLine();
                 }
-
+                Console.WriteLine("END 2");
             }
-            else return false;
-
-            return true;
-        }
-
-        public void sendCommand(string tampon)
-        {
-            _sw.WriteLine(tampon);
+            
+            return false;
         }
 
         public bool Connected()
