@@ -99,7 +99,7 @@ namespace ClientFTP
             // probleme
             while (!_sr.EndOfStream)
             {
-                Console.WriteLine(">> " + _sr.Read());
+                Console.WriteLine(">> " + _sr.ReadLine());
             }
 
             Console.WriteLine(">> END <<");
