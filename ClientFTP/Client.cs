@@ -80,7 +80,14 @@ namespace ClientFTP
                     _sw.WriteLine("PASV");
                 }
 
-                ConsolePrint();
+                while (!_sr.EndOfStream)
+                {
+                    if (_sr.ReadLine().Contains("220"))
+                    {
+                        Console.WriteLine("Co OK !");
+                        break;
+                    }
+                }
 
             }
             else return false;
@@ -91,27 +98,6 @@ namespace ClientFTP
         public void sendCommand(string tampon)
         {
             _sw.WriteLine(tampon);
-        }
-
-        private void ConsolePrint()
-        {
-            _sr.ReadLine();
-
-            string ligne = "";
-
-            
-
-            int i = 0;
-            while (ligne!="" || !_sr.EndOfStream)
-            {
-                ligne = _sr.ReadLine();
-                Console.WriteLine(i + ">> " + ligne);
-                Console.WriteLine(i + "  etat = " + !_sr.EndOfStream);
-                i++;
-            }
-
-            Console.WriteLine(">> END <<");
-
         }
 
         public bool Connected()
