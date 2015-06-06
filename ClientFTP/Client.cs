@@ -67,30 +67,47 @@ namespace ClientFTP
                 _sw = new StreamWriter(_clientSocket.GetStream(), Encoding.Default);
                 _sw.AutoFlush = true;
                 
+                //on envoie le login
                 _sw.WriteLine("USER " + _userID);
 
+                //on envoie le mdp
                 _sw.WriteLine("PASS " + _password);
                 
-
-                if (passiv)
-                {
-                    _sw.WriteLine("PASV");
-                }
-
                 string ligne = _sr.ReadLine();
-                while (!_sr.EndOfStream || ligne=="")
+                while (!_sr.EndOfStream || ligne=="") //on parcourt le stream reçu
                 {
                     Console.WriteLine(ligne);
-                    if (ligne.Contains("503") || ligne.Contains("530") || ligne.Contains("500"))
+                    if (ligne.Contains("503") || ligne.Contains("530") || ligne.Contains("500")) //erreur si il y a un mauvais login, pas de login ou erreur de saisi
                     {
                         Console.WriteLine("Erreur saisi");
                         return false;
                     }
-                    if (ligne.Contains("230"))
+                    if (ligne.Contains("230")) //le login est correct
                     {
-                        Console.WriteLine("Co OK !");
-                        Console.WriteLine("END 1");
-                        return true;
+                        if (passiv)
+                        {
+                            _sw.WriteLine("PASV"); //on indique qu'on est en connexion passive
+                            ligne = _sr.ReadLine();
+                            while (!_sr.EndOfStream || ligne == "")
+                            {
+                                if (ligne.Contains("227")) //code de réponse
+                                {
+                                    string[] num = ligne.Split(','); //on découpe la ligne avec les ,
+                                    Console.WriteLine(ligne);
+
+                                    num[5] = num[5].Remove(num[5].Length-1); //on enlève la ) 
+
+                                    int port = int.Parse(num[4].ToString()) * 256 + int.Parse(num[5].ToString()); //formule d'après la consigne
+
+                                    Console.WriteLine(port);
+
+                                    Console.WriteLine("Co OK !");
+                                    Console.WriteLine("END 1");
+                                    return true;
+                                }
+                                ligne = _sr.ReadLine();
+                            }
+                        }
                     }
                     ligne = _sr.ReadLine();
                 }
