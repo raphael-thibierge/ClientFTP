@@ -16,6 +16,8 @@ namespace ClientFTP
         private string _host;
         private string _port;
 
+        private bool passiv;
+
         private TcpClient _clientSocket;
         StreamWriter _sw;
         StreamReader _sr;
@@ -28,6 +30,7 @@ namespace ClientFTP
             _port = port;
 
             _clientSocket = new TcpClient();
+            passiv = true;
 
         }
 
@@ -58,29 +61,21 @@ namespace ClientFTP
             // ============= END ==============
             _clientSocket.Connect(adresse, 21);
 
+
             if (_clientSocket.Connected)
             {
                 // connexion ok,setting streams to read and write
                 _sr = new StreamReader(_clientSocket.GetStream(), Encoding.Default);
                 _sw = new StreamWriter(_clientSocket.GetStream(), Encoding.Default);
 
-                string tmp;
+                _sw.WriteLine("USER " + _userID);
+                _sw.WriteLine("PASS " + _password);
+                
 
-                // printing header
-
-                ConsolePrint();
-
-
-                // send USER
-                tmp = "USER " + _userID;
-                _sw.WriteLine(tmp);
-                Console.WriteLine("User send !");
-                ConsolePrint();
-
-                // send Password
-                tmp = "PASS " + _password;
-                _sw.WriteLine(tmp);
-                ConsolePrint();
+                if (passiv)
+                {
+                    _sw.WriteLine("PASV");
+                }
 
             }
             else return false;
@@ -106,6 +101,9 @@ namespace ClientFTP
 
         }
 
-
+        public bool Connected()
+        {
+            return _clientSocket.Connected;
+        }
     }
 }

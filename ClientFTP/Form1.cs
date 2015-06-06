@@ -25,6 +25,7 @@ namespace ClientFTP
             Port_textBox.Text = "21";
             UserID_textBox.Text = "anonymous";
             Password_textBox.Text = "toto";
+
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -63,6 +64,11 @@ namespace ClientFTP
         }
 
         private void label6_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Files_listBox_SelectedIndexChanged(object sender, EventArgs e)
         {
 
         }

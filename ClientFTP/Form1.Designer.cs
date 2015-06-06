@@ -42,8 +42,6 @@
             this.Directories_listBox = new System.Windows.Forms.ListBox();
             this.Files_listBox = new System.Windows.Forms.ListBox();
             this.label6 = new System.Windows.Forms.Label();
-            this.Destination_treeView = new System.Windows.Forms.TreeView();
-            this.label7 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // Host_textBox
@@ -154,6 +152,7 @@
             this.Files_listBox.Name = "Files_listBox";
             this.Files_listBox.Size = new System.Drawing.Size(280, 95);
             this.Files_listBox.TabIndex = 13;
+            this.Files_listBox.SelectedIndexChanged += new System.EventHandler(this.Files_listBox_SelectedIndexChanged);
             // 
             // label6
             // 
@@ -165,29 +164,11 @@
             this.label6.Text = "Files list";
             this.label6.Click += new System.EventHandler(this.label6_Click);
             // 
-            // Destination_treeView
-            // 
-            this.Destination_treeView.Location = new System.Drawing.Point(486, 23);
-            this.Destination_treeView.Name = "Destination_treeView";
-            this.Destination_treeView.Size = new System.Drawing.Size(167, 212);
-            this.Destination_treeView.TabIndex = 14;
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(483, 9);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(105, 13);
-            this.label7.TabIndex = 15;
-            this.label7.Text = "Destination Directory";
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(667, 255);
-            this.Controls.Add(this.label7);
-            this.Controls.Add(this.Destination_treeView);
+            this.ClientSize = new System.Drawing.Size(463, 255);
             this.Controls.Add(this.Files_listBox);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.Directories_listBox);
@@ -226,8 +207,6 @@
         private System.Windows.Forms.ListBox Directories_listBox;
         private System.Windows.Forms.ListBox Files_listBox;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.TreeView Destination_treeView;
-        private System.Windows.Forms.Label label7;
     }
 }
 
