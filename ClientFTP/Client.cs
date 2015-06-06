@@ -72,7 +72,13 @@ namespace ClientFTP
 
                 //on envoie le mdp
                 _sw.WriteLine("PASS " + _password);
-                
+
+                if (passiv)
+                {
+                    _sw.WriteLine("PASV"); //on indique qu'on est en connexion passive
+
+                }
+
                 string ligne = _sr.ReadLine();
                 while (!_sr.EndOfStream || ligne=="") //on parcourt le stream reçu
                 {
@@ -87,19 +93,36 @@ namespace ClientFTP
                         if (passiv)
                         {
                             _sw.WriteLine("PASV"); //on indique qu'on est en connexion passive
+
                             ligne = _sr.ReadLine();
                             while (!_sr.EndOfStream || ligne == "")
                             {
+                                Console.WriteLine(ligne);
+
                                 if (ligne.Contains("227")) //code de réponse
                                 {
-                                    string[] num = ligne.Split(','); //on découpe la ligne avec les ,
                                     Console.WriteLine(ligne);
 
-                                    num[5] = num[5].Remove(num[5].Length-1); //on enlève la ) 
+                                    /************ IP *************/
 
+                                    string[] num = ligne.Split(','); //on découpe la ligne avec les ,
+
+                                    string[] couper = num[0].Split('(');
+
+                                    string ip1 = couper[1].ToString();
+
+                                    for(int i = 0; i<num.Length; i++)
+                                        Console.WriteLine(num[i]);
+
+                                    Console.WriteLine("découpe :" + ip1);
+                                    string newIp = ip1 + '.' + num[1] + '.' + num[2] + '.' + num[3];
+
+                                    Console.WriteLine("IP=" + newIp);
+                                    
+                                    num[5] = num[5].Remove(num[5].Length-1); //on enlève la ) 
                                     int port = int.Parse(num[4].ToString()) * 256 + int.Parse(num[5].ToString()); //formule d'après la consigne
 
-                                    Console.WriteLine(port);
+                                    Console.WriteLine("PORT=" + port);
 
                                     Console.WriteLine("Co OK !");
                                     Console.WriteLine("END 1");
