@@ -39,11 +39,15 @@ namespace ClientFTP
             // ============= ISSUE DU PROJET POP3 ==============
             // get IP adress and connect
 
+
+
             //(AddressFamily.InterNetwork,SocketType.Stream,ProtocolType.Tcp);
             IPAddress adresse = IPAddress.Parse("127.0.0.1");
             //IPAddress adresse;
+            
             bool trouve = false;
             IPAddress[] adresses = Dns.GetHostAddresses(_host);
+            
             foreach (IPAddress ip in adresses)
             {//on cherche la première adresse IPV4
                 if (ip.AddressFamily == AddressFamily.InterNetwork)
@@ -59,9 +63,8 @@ namespace ClientFTP
             }
 
             // ============= END ==============
+   
             _clientSocket.Connect(adresse, 21);
-
-
             if (_clientSocket.Connected)
             {
                 // connexion ok,setting streams to read and write
@@ -77,6 +80,8 @@ namespace ClientFTP
                     _sw.WriteLine("PASV");
                 }
 
+                ConsolePrint();
+
             }
             else return false;
 
@@ -90,11 +95,19 @@ namespace ClientFTP
 
         private void ConsolePrint()
         {
+            _sr.ReadLine();
 
-            // probleme
-            while (!_sr.EndOfStream)
+            string ligne = "";
+
+            
+
+            int i = 0;
+            while (ligne!="" || !_sr.EndOfStream)
             {
-                Console.WriteLine(">> " + _sr.ReadLine());
+                ligne = _sr.ReadLine();
+                Console.WriteLine(i + ">> " + ligne);
+                Console.WriteLine(i + "  etat = " + !_sr.EndOfStream);
+                i++;
             }
 
             Console.WriteLine(">> END <<");
