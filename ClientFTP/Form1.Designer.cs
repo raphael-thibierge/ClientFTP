@@ -38,6 +38,12 @@
             this.Password_textBox = new System.Windows.Forms.TextBox();
             this.Connect_button = new System.Windows.Forms.Button();
             this.ConnexionState_label = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.Directories_listBox = new System.Windows.Forms.ListBox();
+            this.Files_listBox = new System.Windows.Forms.ListBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.Destination_treeView = new System.Windows.Forms.TreeView();
+            this.label7 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // Host_textBox
@@ -123,11 +129,69 @@
             this.ConnexionState_label.Size = new System.Drawing.Size(0, 13);
             this.ConnexionState_label.TabIndex = 9;
             // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(157, 9);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(72, 13);
+            this.label5.TabIndex = 10;
+            this.label5.Text = "Directories list";
+            this.label5.Click += new System.EventHandler(this.label5_Click);
+            // 
+            // Directories_listBox
+            // 
+            this.Directories_listBox.FormattingEnabled = true;
+            this.Directories_listBox.Location = new System.Drawing.Point(160, 25);
+            this.Directories_listBox.Name = "Directories_listBox";
+            this.Directories_listBox.Size = new System.Drawing.Size(280, 95);
+            this.Directories_listBox.TabIndex = 11;
+            // 
+            // Files_listBox
+            // 
+            this.Files_listBox.FormattingEnabled = true;
+            this.Files_listBox.Location = new System.Drawing.Point(160, 140);
+            this.Files_listBox.Name = "Files_listBox";
+            this.Files_listBox.Size = new System.Drawing.Size(280, 95);
+            this.Files_listBox.TabIndex = 13;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(157, 124);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(43, 13);
+            this.label6.TabIndex = 12;
+            this.label6.Text = "Files list";
+            this.label6.Click += new System.EventHandler(this.label6_Click);
+            // 
+            // Destination_treeView
+            // 
+            this.Destination_treeView.Location = new System.Drawing.Point(486, 23);
+            this.Destination_treeView.Name = "Destination_treeView";
+            this.Destination_treeView.Size = new System.Drawing.Size(167, 212);
+            this.Destination_treeView.TabIndex = 14;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(483, 9);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(105, 13);
+            this.label7.TabIndex = 15;
+            this.label7.Text = "Destination Directory";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(284, 261);
+            this.ClientSize = new System.Drawing.Size(667, 255);
+            this.Controls.Add(this.label7);
+            this.Controls.Add(this.Destination_treeView);
+            this.Controls.Add(this.Files_listBox);
+            this.Controls.Add(this.label6);
+            this.Controls.Add(this.Directories_listBox);
+            this.Controls.Add(this.label5);
             this.Controls.Add(this.ConnexionState_label);
             this.Controls.Add(this.Connect_button);
             this.Controls.Add(this.label4);
@@ -158,6 +222,12 @@
         private System.Windows.Forms.TextBox Password_textBox;
         private System.Windows.Forms.Button Connect_button;
         private System.Windows.Forms.Label ConnexionState_label;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.ListBox Directories_listBox;
+        private System.Windows.Forms.ListBox Files_listBox;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.TreeView Destination_treeView;
+        private System.Windows.Forms.Label label7;
     }
 }
 

@@ -13,10 +13,13 @@ namespace ClientFTP
     public partial class Form1 : Form
     {
         private Client _client;
+        
+
 
         public Form1()
         {
             InitializeComponent();
+
             // default Connextion textBox Values
             Host_textBox.Text = "ftp.lip6.fr";
             Port_textBox.Text = "21";
@@ -52,6 +55,16 @@ namespace ClientFTP
             {
                 ConnexionState_label.Text = "Non Connecté !";
             }
+        }
+
+        private void label5_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label6_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
