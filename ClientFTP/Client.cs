@@ -174,7 +174,6 @@ namespace ClientFTP
 
             return false;
         }
-       
 
     }
 }

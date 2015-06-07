@@ -26,6 +26,7 @@ namespace ClientFTP
             UserID_textBox.Text = "anonymous";
             Password_textBox.Text = "";
 
+
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -57,6 +58,7 @@ namespace ClientFTP
                 ConnexionState_label.Text = "Non Connecté !";
             }
         }
+
 
         private void label5_Click(object sender, EventArgs e)
         {
