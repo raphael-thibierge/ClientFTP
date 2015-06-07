@@ -20,7 +20,7 @@ namespace ClientFTP
         private bool passiv;
 
         private TcpClient _clientSocket;
-        private TcpListener _clientSocketPassive;
+        private TcpClient _clientSocketPassive;
 
         private StreamWriter _sw;
         private StreamReader _sr;
@@ -48,7 +48,6 @@ namespace ClientFTP
 
             //(AddressFamily.InterNetwork,SocketType.Stream,ProtocolType.Tcp);
             IPAddress adresse = IPAddress.Parse("127.0.0.1");
-            //IPAddress adresse;
             
             bool trouve = false;
             IPAddress[] adresses = Dns.GetHostAddresses(_host);
@@ -75,44 +74,45 @@ namespace ClientFTP
                 _sr = new StreamReader(_clientSocket.GetStream(), Encoding.Default);
                 _sw = new StreamWriter(_clientSocket.GetStream(), Encoding.Default);
                 _sw.AutoFlush = true;
+
+                // Reading header
                 
-                //on envoie le login
+
+                if (!readLineWithCode("220"))
+                {
+                    Console.WriteLine("Serveur not found !");
+                    return false;
+                }
+                Console.WriteLine("Serveur found !");
+
+
+                /* ======= LOGIN ======== */
                 _sw.WriteLine("USER " + _userID);
 
-                //on envoie le mdp
+                if (!readLineWithCode("331"))
+                {
+                    Console.WriteLine("Bad User");
+                    return false;
+                }
+
+
+                /* ======= PASSWORD ======== */
                 _sw.WriteLine("PASS " + _password);
 
-                if (passiv)
+                if (!readLineWithCode("230"))
                 {
-                    _sw.WriteLine("PASV"); //on indique qu'on est en connexion passive
-
+                    Console.WriteLine("Bad Password");
+                    return false;
                 }
+                Console.WriteLine("User Connected");
+            }
 
-                string ligne = _sr.ReadLine();
-                while (!_sr.EndOfStream || ligne=="") //on parcourt le stream reçu
-                {
-                    Console.WriteLine(ligne);
-
-                    if (ligne.Contains("503") || ligne.Contains("530") || ligne.Contains("500"))
-                    {  //erreur si il y a un mauvais login, pas de login ou erreur de saisi
-                        Console.WriteLine("Erreur saisi");
-                        return false;
-                    }
-
-                    if (ligne.Contains("230"))
-                    { //le login est correct
-                        if (passiv)
-                        {
-                            if (ReconnectToPassive())
-                                return true;
-                        }
-                    }
-                    ligne = _sr.ReadLine();
-                }
-                Console.WriteLine("END 2");
+            else
+            {
+                return false;
             }
             
-            return false;
+            return true;
         }
 
         public bool Connected()
@@ -132,35 +132,35 @@ namespace ClientFTP
 
                 if (ligne.Contains("227")) //code de réponse
                 {
-                    Console.WriteLine(ligne);
 
                     /************ IP *************/
 
-                    string[] num = ligne.Split(','); //on découpe la ligne avec les ,
+                    //on découpe la ligne avec les ,
+                    string[] num = ligne.Split(','); 
 
                     string[] couper = num[0].Split('(');
 
-                    string ip1 = couper[1].ToString();
+                    string ip1 = couper[1];
 
-                    for (int i = 0; i < num.Length; i++)
-                        Console.WriteLine(num[i]);
-
-                    Console.WriteLine("découpe :" + ip1);
                     IpAfterConnect = ip1 + '.' + num[1] + '.' + num[2] + '.' + num[3];
 
-                    Console.WriteLine("IP=" + IpAfterConnect);
+                    Console.WriteLine("IP = " + IpAfterConnect);
 
-                    num[5] = num[5].Remove(num[5].Length - 1); //on enlève la ")" 
-                    int port = int.Parse(num[4].ToString()) * 256 + int.Parse(num[5].ToString()); //formule d'après la consigne
-                    _portAfterConnect = port;
-                    Console.WriteLine("PORT=" + port);
+                    /************ PORT  *************/
+                    
+                    num[5] = num[5].Remove(num[5].Length - 1); //on enlève la ")" à la fin de ka chaine de charactère
 
-                    Console.WriteLine("Co OK !");
-                    Console.WriteLine("END 1");
+                    _portAfterConnect = int.Parse(num[4]) * 256 + int.Parse(num[5]); //formule d'après la consigne
+                
+                    Console.WriteLine("PORT = " + _portAfterConnect);
+
 
                     try
                     {
-                        _clientSocketPassive = new TcpListener(IPAddress.Parse(IpAfterConnect), _portAfterConnect);
+                        _clientSocketPassive = new TcpClient();
+
+
+                        _clientSocketPassive.Connect(IPAddress.Parse(IpAfterConnect), _portAfterConnect);
                     }
                     catch (Exception)
                     {
@@ -192,6 +192,40 @@ namespace ClientFTP
             Console.WriteLine("Changing to directory " + name);
             _sw.WriteLine("CWD " + name);
             Console.WriteLine(_sr.ReadLine());
+        }
+
+        private bool readLineWithCode(string code, bool verbose = true)
+        {
+            // return true if code found and streal read 
+            // else return false if code wanted not found
+
+            string line = _sr.ReadLine();
+            if (verbose)
+                Console.WriteLine(line);
+            
+            
+            if (line.Contains(code))
+            {
+                if (line.Contains(code + '-'))
+                {
+                    line = _sr.ReadLine();
+                    if (verbose)
+                        Console.WriteLine(line);
+                    while (!line.Contains(code))
+                    {
+                        line = _sr.ReadLine();
+                        if (verbose)
+                            Console.WriteLine(line);
+                    }
+                }
+                
+            }
+            else
+            {
+                return false;
+            }
+
+            return true;
         }
 
     }
