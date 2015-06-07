@@ -70,6 +70,8 @@ namespace ClientFTP
 
             if (_clientSocket.Connected)
             {
+                IpAfterConnect = adresse.ToString();
+
                 // connexion ok,setting streams to read and write
                 _sr = new StreamReader(_clientSocket.GetStream(), Encoding.Default);
                 _sw = new StreamWriter(_clientSocket.GetStream(), Encoding.Default);
@@ -120,57 +122,52 @@ namespace ClientFTP
             return _clientSocket.Connected;
         }
 
-        private bool ReconnectToPassive()
+        public bool ReconnectToPassive()
         {
             //on indique qu'on est en connexion passive
             _sw.WriteLine("PASV");
-
+            //_sw.WriteLine("PASV");
             string ligne = _sr.ReadLine();
-            while (!_sr.EndOfStream || ligne == "")
+            Console.WriteLine(ligne);
+            if (ligne.Contains("227")) //code de réponse
             {
-                Console.WriteLine(ligne);
 
-                if (ligne.Contains("227")) //code de réponse
-                {
+                /************ IP *************/
 
-                    /************ IP *************/
+                //on découpe la ligne avec les ,
+                string[] num = ligne.Split(','); 
 
-                    //on découpe la ligne avec les ,
-                    string[] num = ligne.Split(','); 
+                string[] couper = num[0].Split('(');
 
-                    string[] couper = num[0].Split('(');
+                string ip1 = couper[1];
 
-                    string ip1 = couper[1];
+                IpAfterConnect = ip1 + '.' + num[1] + '.' + num[2] + '.' + num[3];
 
-                    IpAfterConnect = ip1 + '.' + num[1] + '.' + num[2] + '.' + num[3];
+                Console.WriteLine("IP = " + IpAfterConnect);
 
-                    Console.WriteLine("IP = " + IpAfterConnect);
-
-                    /************ PORT  *************/
+                /************ PORT  *************/
                     
-                    num[5] = num[5].Remove(num[5].Length - 1); //on enlève la ")" à la fin de ka chaine de charactère
+                num[5] = num[5].Remove(num[5].Length - 1); //on enlève la ")" à la fin de ka chaine de charactère
 
-                    _portAfterConnect = int.Parse(num[4]) * 256 + int.Parse(num[5]); //formule d'après la consigne
+                _portAfterConnect = int.Parse(num[4]) * 256 + int.Parse(num[5]); //formule d'après la consigne
                 
-                    Console.WriteLine("PORT = " + _portAfterConnect);
+                Console.WriteLine("PORT = " + _portAfterConnect);
 
 
-                    try
-                    {
-                        _clientSocketPassive = new TcpClient();
+                try
+                {
+                    _clientSocketPassive = new TcpClient();
 
 
-                        _clientSocketPassive.Connect(IPAddress.Parse(IpAfterConnect), _portAfterConnect);
-                    }
-                    catch (Exception)
-                    {
-                        Console.WriteLine(">>>> Le serveur a refusé la connextion !");
-                        return false;
-                    }
-                    Console.WriteLine(">>>> Le serveur a accepté la connextion !");
-                    return true;
+                    _clientSocketPassive.Connect(IPAddress.Parse(IpAfterConnect), _portAfterConnect);
                 }
-                ligne = _sr.ReadLine();
+                catch (Exception)
+                {
+                    Console.WriteLine(">>>> Le serveur a refusé la connextion !");
+                    return false;
+                }
+                Console.WriteLine(">>>> Le serveur a accepté la connextion !");
+                return true;
             }
 
             return false;
