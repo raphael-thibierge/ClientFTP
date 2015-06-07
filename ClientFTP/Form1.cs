@@ -137,11 +137,14 @@ namespace ClientFTP
         public void moveToDirectory(string name)
         {
             // change directory in host
-            _client.moveToDirectory(name);
-            _currentDirectory = _currentDirectory.getDirectory(name);
-            Console.WriteLine("current directory" + _currentDirectory.Name);
-            // update directory's content
-            treatListResult(_client.getListResult());
+            if (_client.moveToDirectory(name))
+            {
+                _currentDirectory = _currentDirectory.getDirectory(name);
+                Console.WriteLine("current directory : " + _currentDirectory.Name);
+                // update directory's content
+                treatListResult(_client.getListResult());
+            }
+            
         }
 
 

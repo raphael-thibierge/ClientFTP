@@ -173,29 +173,39 @@ namespace ClientFTP
 
         public List<String> getListResult()
         {
+
+
             ReconnectToPassive();
             StreamReader sr = new StreamReader(_clientSocketPassive.GetStream(), Encoding.Default);
             _sw.WriteLine("LIST");
-
-            string line;
             List<String> result = new List<string>();
-            Console.WriteLine(sr.ReadLine());
-            while (!sr.EndOfStream)
+
+            if (readLineWithCode("150"))
             {
-                line = sr.ReadLine();
-                Console.WriteLine(line);
-                result.Add(line);
+                string line;
                 
+                Console.WriteLine(sr.ReadLine());
+                while (!sr.EndOfStream)
+                {
+                    line = sr.ReadLine();
+                    Console.WriteLine(line);
+                    result.Add(line);
+
+                }
             }
 
+            readLineWithCode("226");
+                
             return result;
         }
 
-        public void moveToDirectory(string name)
+        public bool moveToDirectory(string name)
         {
             Console.WriteLine("Changing to directory " + name);
             _sw.WriteLine("CWD " + name);
-            Console.WriteLine(_sr.ReadLine());
+            if (readLineWithCode("250"))
+                return true;
+            return false;
         }
 
         private bool readLineWithCode(string code, bool verbose = true)
