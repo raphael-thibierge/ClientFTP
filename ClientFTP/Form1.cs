@@ -13,8 +13,8 @@ namespace ClientFTP
     public partial class Form1 : Form
     {
         private Client _client;
-        
-
+        private Directory _rootDirectory;
+        private Directory _currentDirectory;
 
         public Form1()
         {
@@ -25,6 +25,8 @@ namespace ClientFTP
             Port_textBox.Text = "21";
             UserID_textBox.Text = "anonymous";
             Password_textBox.Text = "";
+
+            Refresh_button.Hide();
 
 
         }
@@ -51,7 +53,15 @@ namespace ClientFTP
             // connexion
             if (_client.connect())
             {
+                Refresh_button.Show();
                 ConnexionState_label.Text = _client.IpAfterConnect + " connecté !";
+                
+                _rootDirectory = new Directory("/", "rwxrwxrdx", 0);
+                _currentDirectory = _rootDirectory;
+
+                treatListResult(_client.getListResult());
+                
+
             }
             else
             {
@@ -74,5 +84,62 @@ namespace ClientFTP
         {
 
         }
+
+        private void treatListResult(string[] listStrings)
+        {
+            foreach (string line in listStrings)
+            {
+                // split line
+                string[] tmp = line.Split(' ');
+
+                // get name
+                string name = tmp[tmp.Count() - 1];
+
+                // get rights
+                string rights = tmp[0];
+                char type = rights[0];
+                rights.Remove(0);
+                
+                // get size
+                int size = 0;
+
+                // create file or directory
+                if (type == 'd')
+                {
+                    _currentDirectory.DirectoriesList.Add(new Directory(name, rights, size));
+                }
+                else if (type == '-')
+                {
+                    _currentDirectory.FilesList.Add(new File(name, rights,size));
+                }
+            }
+            
+            // update listBox
+            updateDirectoryContentListBox();
+        }
+
+        private void updateDirectoryContentListBox()
+        {
+            Directories_listBox.Items.Clear();
+            Files_listBox.Items.Clear();
+            
+            foreach (Directory directory in _currentDirectory.DirectoriesList)
+            {
+                Directories_listBox.Items.Add(directory.Name);
+            }
+
+            foreach (File file in _currentDirectory.FilesList)
+            {
+                Files_listBox.Items.Add(file.Name);
+            }
+            
+        }
+
+        private void Refresh_button_Click(object sender, EventArgs e)
+        {
+            updateDirectoryContentListBox();
+        }
+
+
     }
 }

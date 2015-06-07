@@ -9,25 +9,22 @@ namespace ClientFTP
 {
     class File
     {
-        private string _name;
+        public string Name { get; private set; }
         private int _size;
         private string _rights;
 
 
-        public File(string lineFromList)
+        public File(string name, string rights, int size)
         {
-            string[] tmp = lineFromList.Split(' ');
-
-            _rights = tmp[0];
-            _rights.Remove(0);
-
-            _size = 0;
-            _name = tmp[tmp.Count() - 1];  
+            Name = name;
+            _rights = rights;
+            _size = size;
         }
+
 
         public string ToString()
         {
-            return _name;
+            return Name;
         }
     
     }

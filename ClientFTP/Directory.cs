@@ -9,27 +9,28 @@ namespace ClientFTP
 {
     class Directory
     {
-        private string _name;
+        public string Name { get; private set; }
         private int _size;
         private string _rights;
 
         public List<File> FilesList { get; private set; }
         public List<Directory> DirectoriesList { get; private set; }
 
-        public Directory(string lineFromList)
-        {
-            string[] tmp = lineFromList.Split(' ');
 
-            _rights = tmp[0];
-            _rights.Remove(0);
+        public Directory(string name, string rights, int size)
+        {
+            Name = name;
+            _rights = rights;
+            _size = size;
             
-            _size = 0;
-            _name = tmp[tmp.Count()-1];    
+            FilesList = new List<File>();
+            DirectoriesList = new List<Directory>();
         }
+        
 
         public string ToString()
         {
-            return _name;
+            return Name;
         }
 
     }

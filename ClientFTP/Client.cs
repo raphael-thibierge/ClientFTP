@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms.VisualStyles;
 
 namespace ClientFTP
 {
@@ -166,13 +167,24 @@ namespace ClientFTP
                         Console.WriteLine(">>>> Le serveur a refusé la connextion !");
                         return false;
                     }
-                    Console.WriteLine(">>>> Le serveur a refusé la connextion !");
+                    Console.WriteLine(">>>> Le serveur a accepté la connextion !");
                     return true;
                 }
                 ligne = _sr.ReadLine();
             }
 
             return false;
+        }
+
+        public string[] getListResult()
+        {
+            // return array of string after LIST command
+            string[] test = new string[4];
+            test[0] = "dr-xr-xr-x   2 0     0          512 Nov 30  2008 etc";
+            test[1] = "-r-xr-xr-x   2 0     0          512 Nov 30  2008 coucou";
+            test[2] = "dr-xr-xr-x   2 0     0          512 Nov 30  2008 test";
+            test[3] = "-r-xr-xr-x   2 0     0          512 Nov 30  2008 ahah";
+            return test;
         }
 
     }
