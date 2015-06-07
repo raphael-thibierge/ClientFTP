@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -24,7 +25,6 @@ namespace ClientFTP
 
         private StreamWriter _sw;
         private StreamReader _sr;
-        private StreamReader _srp;
 
         public string IpAfterConnect { get; private set; }
         private int _portAfterConnect; // needed for passive connection
@@ -122,11 +122,11 @@ namespace ClientFTP
             return _clientSocket.Connected;
         }
 
-        public bool ReconnectToPassive()
+        private bool ReconnectToPassive()
         {
             //on indique qu'on est en connexion passive
             _sw.WriteLine("PASV");
-            //_sw.WriteLine("PASV");
+
             string ligne = _sr.ReadLine();
             Console.WriteLine(ligne);
             if (ligne.Contains("227")) //code de réponse
@@ -157,8 +157,6 @@ namespace ClientFTP
                 try
                 {
                     _clientSocketPassive = new TcpClient();
-
-
                     _clientSocketPassive.Connect(IPAddress.Parse(IpAfterConnect), _portAfterConnect);
                 }
                 catch (Exception)
@@ -173,15 +171,24 @@ namespace ClientFTP
             return false;
         }
 
-        public string[] getListResult()
+        public List<String> getListResult()
         {
-            // return array of string after LIST command
-            string[] test = new string[4];
-            test[0] = "dr-xr-xr-x   2 0     0          512 Nov 30  2008 etc";
-            test[1] = "-r-xr-xr-x   2 0     0          512 Nov 30  2008 coucou";
-            test[2] = "dr-xr-xr-x   2 0     0          512 Nov 30  2008 test";
-            test[3] = "-r-xr-xr-x   2 0     0          512 Nov 30  2008 ahah";
-            return test;
+            ReconnectToPassive();
+            StreamReader sr = new StreamReader(_clientSocketPassive.GetStream(), Encoding.Default);
+            _sw.WriteLine("LIST");
+
+            string line;
+            List<String> result = new List<string>();
+            Console.WriteLine(sr.ReadLine());
+            while (!sr.EndOfStream)
+            {
+                line = sr.ReadLine();
+                Console.WriteLine(line);
+                result.Add(line);
+                
+            }
+
+            return result;
         }
 
         public void moveToDirectory(string name)

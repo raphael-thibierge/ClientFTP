@@ -54,9 +54,7 @@ namespace ClientFTP
             if (_client.connect())
             {
                 Refresh_button.Show();
-
-                _client.ReconnectToPassive();
-
+                
                 ConnexionState_label.Text = _client.IpAfterConnect + " connecté !";
                 
                 _rootDirectory = new Directory("/", "rwxrwxrdx", 0, null);
@@ -78,7 +76,7 @@ namespace ClientFTP
 
         }
 
-        private void treatListResult(string[] listStrings)
+        private void treatListResult(List<String> listStrings)
         {
             _currentDirectory.DirectoriesList.Clear();
             _currentDirectory.FilesList.Clear();
