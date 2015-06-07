@@ -111,7 +111,7 @@
             // 
             // Connect_button
             // 
-            this.Connect_button.Location = new System.Drawing.Point(25, 166);
+            this.Connect_button.Location = new System.Drawing.Point(23, 166);
             this.Connect_button.Name = "Connect_button";
             this.Connect_button.Size = new System.Drawing.Size(75, 23);
             this.Connect_button.TabIndex = 8;
@@ -122,7 +122,7 @@
             // ConnexionState_label
             // 
             this.ConnexionState_label.AutoSize = true;
-            this.ConnexionState_label.Location = new System.Drawing.Point(33, 192);
+            this.ConnexionState_label.Location = new System.Drawing.Point(9, 194);
             this.ConnexionState_label.Name = "ConnexionState_label";
             this.ConnexionState_label.Size = new System.Drawing.Size(0, 13);
             this.ConnexionState_label.TabIndex = 9;

@@ -50,7 +50,7 @@ namespace ClientFTP
             // connexion
             if (_client.connect())
             {
-                ConnexionState_label.Text = "Connecté !";
+                ConnexionState_label.Text = _client.IpAfterConnect + " connecté !";
             }
             else
             {

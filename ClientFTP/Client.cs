@@ -19,8 +19,14 @@ namespace ClientFTP
         private bool passiv;
 
         private TcpClient _clientSocket;
-        StreamWriter _sw;
-        StreamReader _sr;
+        private TcpClient _clientSocketPassive;
+
+        private StreamWriter _sw;
+        private StreamReader _sr;
+        private StreamReader _srp;
+
+        public string IpAfterConnect { get; private set; }
+        private int _portAfterConnect; // needed for passive connection
 
         public Client(string id, string pwd, string host, string port)
         {
@@ -59,7 +65,9 @@ namespace ClientFTP
             {
                 return false;
             }
+
             _clientSocket.Connect(adresse, 21);
+
             if (_clientSocket.Connected)
             {
                 // connexion ok,setting streams to read and write
@@ -83,16 +91,19 @@ namespace ClientFTP
                 while (!_sr.EndOfStream || ligne=="") //on parcourt le stream reçu
                 {
                     Console.WriteLine(ligne);
-                    if (ligne.Contains("503") || ligne.Contains("530") || ligne.Contains("500")) //erreur si il y a un mauvais login, pas de login ou erreur de saisi
-                    {
+
+                    if (ligne.Contains("503") || ligne.Contains("530") || ligne.Contains("500"))
+                    {  //erreur si il y a un mauvais login, pas de login ou erreur de saisi
                         Console.WriteLine("Erreur saisi");
                         return false;
                     }
-                    if (ligne.Contains("230")) //le login est correct
-                    {
+
+                    if (ligne.Contains("230"))
+                    { //le login est correct
                         if (passiv)
                         {
-                            _sw.WriteLine("PASV"); //on indique qu'on est en connexion passive
+                            //on indique qu'on est en connexion passive
+                            _sw.WriteLine("PASV"); 
 
                             ligne = _sr.ReadLine();
                             while (!_sr.EndOfStream || ligne == "")
@@ -115,18 +126,21 @@ namespace ClientFTP
                                         Console.WriteLine(num[i]);
 
                                     Console.WriteLine("découpe :" + ip1);
-                                    string newIp = ip1 + '.' + num[1] + '.' + num[2] + '.' + num[3];
+                                    IpAfterConnect = ip1 + '.' + num[1] + '.' + num[2] + '.' + num[3];
 
-                                    Console.WriteLine("IP=" + newIp);
+                                    Console.WriteLine("IP=" + IpAfterConnect);
                                     
-                                    num[5] = num[5].Remove(num[5].Length-1); //on enlève la ) 
+                                    num[5] = num[5].Remove(num[5].Length-1); //on enlève la ")" 
                                     int port = int.Parse(num[4].ToString()) * 256 + int.Parse(num[5].ToString()); //formule d'après la consigne
-
+                                    _portAfterConnect = port;
                                     Console.WriteLine("PORT=" + port);
 
                                     Console.WriteLine("Co OK !");
                                     Console.WriteLine("END 1");
-                                    return true;
+                                    
+                                    if (ReconnectToPassive())
+                                        return true;
+                                    return false;
                                 }
                                 ligne = _sr.ReadLine();
                             }
@@ -144,5 +158,33 @@ namespace ClientFTP
         {
             return _clientSocket.Connected;
         }
+
+        private bool ReconnectToPassive()
+        {
+            _clientSocketPassive = new TcpClient();
+
+            try
+            {
+                Console.WriteLine(">>>> " + IpAfterConnect + " / " + _portAfterConnect.ToString());
+                _clientSocketPassive.Connect(IPAddress.Parse(IpAfterConnect), _portAfterConnect);
+            }
+            catch (Exception)
+            {
+                Console.WriteLine(">>>> Le serveur a refusé la connextion");
+                return false;
+            }
+
+            if (_clientSocketPassive.Connected)
+            {
+                _srp = new StreamReader(_clientSocketPassive.GetStream(), Encoding.Default);
+                Console.WriteLine(">>>> Connexion passive ok");
+
+                return true;
+            }
+
+            return false;
+        }
+       
+
     }
 }
