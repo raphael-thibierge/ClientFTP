@@ -19,7 +19,7 @@ namespace ClientFTP
         private bool passiv;
 
         private TcpClient _clientSocket;
-        private TcpClient _clientSocketPassive;
+        private TcpListener _clientSocketPassive;
 
         private StreamWriter _sw;
         private StreamReader _sr;
@@ -161,28 +161,17 @@ namespace ClientFTP
 
         private bool ReconnectToPassive()
         {
-            _clientSocketPassive = new TcpClient();
-
             try
             {
-                Console.WriteLine(">>>> " + IpAfterConnect + " / " + _portAfterConnect.ToString());
-                _clientSocketPassive.Connect(IPAddress.Parse(IpAfterConnect), _portAfterConnect);
+                _clientSocketPassive = new TcpListener(IPAddress.Parse(IpAfterConnect), _portAfterConnect);
             }
             catch (Exception)
             {
-                Console.WriteLine(">>>> Le serveur a refusé la connextion");
+                Console.WriteLine(">>>> Le serveur a refusé la connextion !");
                 return false;
             }
-
-            if (_clientSocketPassive.Connected)
-            {
-                _srp = new StreamReader(_clientSocketPassive.GetStream(), Encoding.Default);
-                Console.WriteLine(">>>> Connexion passive ok");
-
-                return true;
-            }
-
-            return false;
+            Console.WriteLine(">>>> Le serveur a accepté la connextion !");
+            return true;
         }
        
 
