@@ -189,7 +189,9 @@ namespace ClientFTP
 
         public void moveToDirectory(string name)
         {
-            
+            Console.WriteLine("Changing to directory " + name);
+            _sw.WriteLine("CWD " + name);
+            Console.WriteLine(_sr.ReadLine());
         }
 
     }
