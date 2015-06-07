@@ -56,7 +56,7 @@ namespace ClientFTP
                 Refresh_button.Show();
                 ConnexionState_label.Text = _client.IpAfterConnect + " connecté !";
                 
-                _rootDirectory = new Directory("/", "rwxrwxrdx", 0);
+                _rootDirectory = new Directory("/", "rwxrwxrdx", 0, null);
                 _currentDirectory = _rootDirectory;
 
                 treatListResult(_client.getListResult());
@@ -70,16 +70,6 @@ namespace ClientFTP
         }
 
 
-        private void label5_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label6_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void Files_listBox_SelectedIndexChanged(object sender, EventArgs e)
         {
 
@@ -87,6 +77,9 @@ namespace ClientFTP
 
         private void treatListResult(string[] listStrings)
         {
+            _currentDirectory.DirectoriesList.Clear();
+            _currentDirectory.FilesList.Clear();
+
             foreach (string line in listStrings)
             {
                 // split line
@@ -106,7 +99,7 @@ namespace ClientFTP
                 // create file or directory
                 if (type == 'd')
                 {
-                    _currentDirectory.DirectoriesList.Add(new Directory(name, rights, size));
+                    _currentDirectory.DirectoriesList.Add(new Directory(name, rights, size, _currentDirectory));
                 }
                 else if (type == '-')
                 {
@@ -122,7 +115,12 @@ namespace ClientFTP
         {
             Directories_listBox.Items.Clear();
             Files_listBox.Items.Clear();
-            
+
+            if (_currentDirectory.ParentDirectory != null)
+            {
+                Directories_listBox.Items.Add("..");
+            }
+
             foreach (Directory directory in _currentDirectory.DirectoriesList)
             {
                 Directories_listBox.Items.Add(directory.Name);
@@ -135,9 +133,28 @@ namespace ClientFTP
             
         }
 
+        public void moveToDirectory(string name)
+        {
+            // change directory in host
+            _client.moveToDirectory(name);
+            _currentDirectory = _currentDirectory.getDirectory(name);
+            Console.WriteLine("current directory" + _currentDirectory.Name);
+            // update directory's content
+            treatListResult(_client.getListResult());
+        }
+
+
         private void Refresh_button_Click(object sender, EventArgs e)
         {
             updateDirectoryContentListBox();
+        }
+
+        private void Directories_listBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (Directories_listBox.SelectedItem != null)
+            {
+                moveToDirectory(Directories_listBox.SelectedItem.ToString());
+            }
         }
 
 

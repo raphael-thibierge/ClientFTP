@@ -187,5 +187,10 @@ namespace ClientFTP
             return test;
         }
 
+        public void moveToDirectory(string name)
+        {
+            
+        }
+
     }
 }

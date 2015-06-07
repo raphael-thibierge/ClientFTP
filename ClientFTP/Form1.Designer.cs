@@ -69,7 +69,6 @@
             this.label2.Size = new System.Drawing.Size(26, 13);
             this.label2.TabIndex = 3;
             this.label2.Text = "Port";
-            this.label2.Click += new System.EventHandler(this.label2_Click);
             // 
             // Port_textBox
             // 
@@ -136,7 +135,6 @@
             this.label5.Size = new System.Drawing.Size(72, 13);
             this.label5.TabIndex = 10;
             this.label5.Text = "Directories list";
-            this.label5.Click += new System.EventHandler(this.label5_Click);
             // 
             // Directories_listBox
             // 
@@ -145,6 +143,7 @@
             this.Directories_listBox.Name = "Directories_listBox";
             this.Directories_listBox.Size = new System.Drawing.Size(280, 95);
             this.Directories_listBox.TabIndex = 11;
+            this.Directories_listBox.SelectedIndexChanged += new System.EventHandler(this.Directories_listBox_SelectedIndexChanged);
             // 
             // Files_listBox
             // 
@@ -163,7 +162,6 @@
             this.label6.Size = new System.Drawing.Size(43, 13);
             this.label6.TabIndex = 12;
             this.label6.Text = "Files list";
-            this.label6.Click += new System.EventHandler(this.label6_Click);
             // 
             // Refresh_button
             // 

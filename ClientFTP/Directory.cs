@@ -15,9 +15,10 @@ namespace ClientFTP
 
         public List<File> FilesList { get; private set; }
         public List<Directory> DirectoriesList { get; private set; }
+        public Directory ParentDirectory { get; private set; }
 
 
-        public Directory(string name, string rights, int size)
+        public Directory(string name, string rights, int size, Directory parentDirectory)
         {
             Name = name;
             _rights = rights;
@@ -25,12 +26,34 @@ namespace ClientFTP
             
             FilesList = new List<File>();
             DirectoriesList = new List<Directory>();
+            ParentDirectory = parentDirectory;
         }
         
 
         public string ToString()
         {
             return Name;
+        }
+
+        public Directory getDirectory(string name)
+        {
+            if (name == "..")
+            {
+                return ParentDirectory;
+            }
+
+            else
+            {
+                foreach (Directory directory in DirectoriesList)
+                {
+                    if (directory.Name == name)
+                    {
+                        return directory;
+                    }
+                }
+            }
+
+            return null;
         }
 
     }
