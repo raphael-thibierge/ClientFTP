@@ -55,6 +55,7 @@ namespace ClientFTP
             if (_client.connect())
             {
                 Quit_button.Show();
+                Connect_button.Hide();
                 
                 ConnexionState_label.Text = _client.IpAfterConnect + " connecté !";
                 
@@ -192,6 +193,7 @@ namespace ClientFTP
                     _rootDirectory = null;
                     ConnexionState_label.Text = "Déconnecté";
                     Quit_button.Hide();
+                    Connect_button.Show();
                     
                 }
                 
