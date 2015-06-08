@@ -26,7 +26,6 @@ namespace ClientFTP
             UserID_textBox.Text = "anonymous";
             Password_textBox.Text = "";
 
-            Refresh_button.Hide();
             Quit_button.Hide();
 
 
@@ -54,8 +53,6 @@ namespace ClientFTP
             // connexion
             if (_client.connect())
             {
-                Refresh_button.Show();
-
                 Quit_button.Show();
                 
                 ConnexionState_label.Text = _client.IpAfterConnect + " connecté !";
@@ -166,7 +163,23 @@ namespace ClientFTP
 
         private void Quit_button_Click(object sender, EventArgs e)
         {
-            _client.quit();
+            if (_client.Connected())
+            {
+                if (_client.quit())
+                {
+                    Directories_listBox.Items.Clear();
+                    Files_listBox.Items.Clear();
+                    _currentDirectory = null;
+                    _rootDirectory = null;
+                    ConnexionState_label.Text = "Déconnecté";
+                    Quit_button.Hide();
+                    
+                }
+                
+
+            }
+                
+            
         }
     }
 }

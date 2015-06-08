@@ -42,7 +42,6 @@
             this.Directories_listBox = new System.Windows.Forms.ListBox();
             this.Files_listBox = new System.Windows.Forms.ListBox();
             this.label6 = new System.Windows.Forms.Label();
-            this.Refresh_button = new System.Windows.Forms.Button();
             this.Quit_button = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
@@ -164,19 +163,9 @@
             this.label6.TabIndex = 12;
             this.label6.Text = "Files list";
             // 
-            // Refresh_button
-            // 
-            this.Refresh_button.Location = new System.Drawing.Point(23, 212);
-            this.Refresh_button.Name = "Refresh_button";
-            this.Refresh_button.Size = new System.Drawing.Size(75, 23);
-            this.Refresh_button.TabIndex = 14;
-            this.Refresh_button.Text = "Refresh";
-            this.Refresh_button.UseVisualStyleBackColor = true;
-            this.Refresh_button.Click += new System.EventHandler(this.Refresh_button_Click);
-            // 
             // Quit_button
             // 
-            this.Quit_button.Location = new System.Drawing.Point(23, 272);
+            this.Quit_button.Location = new System.Drawing.Point(23, 212);
             this.Quit_button.Name = "Quit_button";
             this.Quit_button.Size = new System.Drawing.Size(75, 23);
             this.Quit_button.TabIndex = 15;
@@ -188,9 +177,8 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(463, 307);
+            this.ClientSize = new System.Drawing.Size(463, 247);
             this.Controls.Add(this.Quit_button);
-            this.Controls.Add(this.Refresh_button);
             this.Controls.Add(this.Files_listBox);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.Directories_listBox);
@@ -229,7 +217,6 @@
         private System.Windows.Forms.ListBox Directories_listBox;
         private System.Windows.Forms.ListBox Files_listBox;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Button Refresh_button;
         private System.Windows.Forms.Button Quit_button;
     }
 }
