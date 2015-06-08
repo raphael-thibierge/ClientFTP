@@ -27,6 +27,7 @@ namespace ClientFTP
             Password_textBox.Text = "";
 
             Refresh_button.Hide();
+            Quit_button.Hide();
 
 
         }
@@ -54,6 +55,8 @@ namespace ClientFTP
             if (_client.connect())
             {
                 Refresh_button.Show();
+
+                Quit_button.Show();
                 
                 ConnexionState_label.Text = _client.IpAfterConnect + " connecté !";
                 
@@ -161,6 +164,9 @@ namespace ClientFTP
             }
         }
 
+        private void Quit_button_Click(object sender, EventArgs e)
+        {
 
+        }
     }
 }
