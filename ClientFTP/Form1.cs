@@ -166,7 +166,7 @@ namespace ClientFTP
 
         private void Quit_button_Click(object sender, EventArgs e)
         {
-
+            _client.quit();
         }
     }
 }

@@ -242,5 +242,14 @@ namespace ClientFTP
             return true;
         }
 
+        public void quit()
+        {
+            _sw.WriteLine("QUIT");
+
+            if(this.readLineWithCode("221"))
+                Console.WriteLine("Deconnection ok");
+            else
+                Console.WriteLine("ER<RRRRRRRRRRRRRROORORO");
+        }
     }
 }
