@@ -289,6 +289,7 @@ namespace ClientFTP
             // if download begin
             if (ReadLineWithCode("150"))
             {
+                Console.WriteLine("Transfert en cours, merci de patienter..");
                 // get content until Stream will be closed
                 while (!sr.EndOfStream)
                 {

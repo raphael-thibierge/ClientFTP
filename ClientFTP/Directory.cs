@@ -17,7 +17,6 @@ namespace ClientFTP
         public List<Directory> DirectoriesList { get; private set; }
         public Directory ParentDirectory { get; private set; }
 
-
         public Directory(string name, string rights, int size, Directory parentDirectory)
         {
             Name = name;
@@ -28,7 +27,6 @@ namespace ClientFTP
             DirectoriesList = new List<Directory>();
             ParentDirectory = parentDirectory;
         }
-        
 
         public override string ToString()
         {
