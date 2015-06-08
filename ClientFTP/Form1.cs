@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -73,6 +74,24 @@ namespace ClientFTP
 
         private void Files_listBox_SelectedIndexChanged(object sender, EventArgs e)
         {
+            SaveFileDialog window = new SaveFileDialog();
+            window.RestoreDirectory = true;
+            window.InitialDirectory = @"c:\";
+            window.FileName = Files_listBox.SelectedItem.ToString();
+            if (window.ShowDialog() == DialogResult.OK)
+            {
+                string fileName = window.FileName;
+                StreamWriter sw = new StreamWriter(fileName);
+                List<string> fileContent = _client.DownloadFile(Files_listBox.SelectedItem.ToString());
+
+                foreach (string line in fileContent)
+                {
+                    sw.WriteLine(line);
+                }
+                sw.Close();
+                MessageBox.Show("Téléchargement terminé");
+            }
+            
 
         }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Deployment.Application;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -174,7 +175,6 @@ namespace ClientFTP
         public List<String> getListResult()
         {
 
-
             ReconnectToPassive();
             StreamReader sr = new StreamReader(_clientSocketPassive.GetStream(), Encoding.Default);
             _sw.WriteLine("LIST");
@@ -254,6 +254,26 @@ namespace ClientFTP
             else
                 Console.WriteLine("ER<RRRRRRRRRRRRRROORORO");
             return false;
+        }
+
+        public List<String> DownloadFile(string fileName)
+        {
+            ReconnectToPassive();
+            StreamReader sr = new StreamReader(_clientSocketPassive.GetStream(), Encoding.Default);
+            _sw.WriteLine("RETR " + fileName);
+            
+            List<String> result = new List<string>();
+
+            if (readLineWithCode("150"))
+            {
+                while (!sr.EndOfStream)
+                {
+                    result.Add(sr.ReadLine());
+                }
+            }
+
+            readLineWithCode("226");
+            return result;
         }
     }
 }
