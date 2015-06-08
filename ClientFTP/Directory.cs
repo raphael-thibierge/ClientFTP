@@ -35,8 +35,9 @@ namespace ClientFTP
             return Name;
         }
 
-        public Directory getDirectory(string name)
-        {
+        public Directory GetDirectory(string name)
+        { // return directory wanted
+            
             if (name == "..")
             {
                 return ParentDirectory;

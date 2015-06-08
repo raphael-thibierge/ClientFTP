@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms.VisualStyles;
@@ -14,12 +15,12 @@ namespace ClientFTP
 {
     class Client
     {
-        private string _userID;
+        private string _userId;
         private string _password;
         private string _host;
-        private string _port;
+        private int _port;
 
-        private bool passiv;
+        private bool _passiv;
 
         private TcpClient _clientSocket;
         private TcpClient _clientSocketPassive;
@@ -30,21 +31,23 @@ namespace ClientFTP
         public string IpAfterConnect { get; private set; }
         private int _portAfterConnect; // needed for passive connection
 
-        public Client(string id, string pwd, string host, string port)
-        {
-            _userID = id;
+        public Client(string id, string pwd, string host)
+        { // cponstructor
+            _userId = id;
             _password = pwd;
             _host = host;
-            _port = port;
+            _port = 21;
 
             _clientSocket = new TcpClient();
-            passiv = true;
+            _passiv = true;
 
         }
 
-        public bool connect()
-        {
-            // ============= ISSUE DU PROJET POP3 ==============
+        public bool Connect()
+        {// connect to host
+
+
+            // ============= COME FROM POP3 PROJECT ==============
             // get IP adress and connect
 
             //(AddressFamily.InterNetwork,SocketType.Stream,ProtocolType.Tcp);
@@ -67,7 +70,7 @@ namespace ClientFTP
                 return false;
             }
 
-            _clientSocket.Connect(adresse, 21);
+            _clientSocket.Connect(adresse, _port);
 
             if (_clientSocket.Connected)
             {
@@ -81,7 +84,7 @@ namespace ClientFTP
                 // Reading header
                 
 
-                if (!readLineWithCode("220"))
+                if (!ReadLineWithCode("220"))
                 {
                     Console.WriteLine("Serveur not found !");
                     return false;
@@ -90,9 +93,9 @@ namespace ClientFTP
 
 
                 /* ======= LOGIN ======== */
-                _sw.WriteLine("USER " + _userID);
+                _sw.WriteLine("USER " + _userId);
 
-                if (!readLineWithCode("331"))
+                if (!ReadLineWithCode("331"))
                 {
                     Console.WriteLine("Bad User");
                     return false;
@@ -102,7 +105,7 @@ namespace ClientFTP
                 /* ======= PASSWORD ======== */
                 _sw.WriteLine("PASS " + _password);
 
-                if (!readLineWithCode("230"))
+                if (!ReadLineWithCode("230"))
                 {
                     Console.WriteLine("Bad Password");
                     return false;
@@ -125,17 +128,19 @@ namespace ClientFTP
 
         private bool ReconnectToPassive()
         {
-            //on indique qu'on est en connexion passive
+            //send Passive mode command
             _sw.WriteLine("PASV");
 
             string ligne = _sr.ReadLine();
             Console.WriteLine(ligne);
-            if (ligne.Contains("227")) //code de réponse
+            
+            // if wanted result code 
+            if (ligne.Contains("227"))
             {
 
                 /************ IP *************/
 
-                //on découpe la ligne avec les ,
+                //split sting with ','
                 string[] num = ligne.Split(','); 
 
                 string[] couper = num[0].Split('(');
@@ -147,14 +152,13 @@ namespace ClientFTP
                 Console.WriteLine("IP = " + IpAfterConnect);
 
                 /************ PORT  *************/
-                    
-                num[5] = num[5].Remove(num[5].Length - 1); //on enlève la ")" à la fin de ka chaine de charactère
 
-                _portAfterConnect = int.Parse(num[4]) * 256 + int.Parse(num[5]); //formule d'après la consigne
-                
+                num[5] = num[5].Remove(num[5].Length - 1); // remove ')' at the end of the string
+
+                _portAfterConnect = int.Parse(num[4]) * 256 + int.Parse(num[5]); //calculate new port
                 Console.WriteLine("PORT = " + _portAfterConnect);
 
-
+                // trying connection in passive mode
                 try
                 {
                     _clientSocketPassive = new TcpClient();
@@ -172,19 +176,23 @@ namespace ClientFTP
             return false;
         }
 
-        public List<String> getListResult()
+        public List<String> GetListResult()
         {
-
+            // reconnect in passive mode
             ReconnectToPassive();
             StreamReader sr = new StreamReader(_clientSocketPassive.GetStream(), Encoding.Default);
+            // send LIST command
             _sw.WriteLine("LIST");
+
             List<String> result = new List<string>();
 
-            if (readLineWithCode("150"))
+            // if good result code
+            if (ReadLineWithCode("150"))
             {
                 string line;
-                
+                // first line isn't a wanted result
                 Console.WriteLine(sr.ReadLine());
+                // get result until connection will be close
                 while (!sr.EndOfStream)
                 {
                     line = sr.ReadLine();
@@ -194,21 +202,27 @@ namespace ClientFTP
                 }
             }
 
-            readLineWithCode("226");
+            // read confirmation code
+            ReadLineWithCode("226");
                 
             return result;
         }
 
-        public bool moveToDirectory(string name)
-        {
-            Console.WriteLine("Changing to directory " + name);
+        public bool MoveToDirectory(string name)
+        { // move to a directory in host
+
             _sw.WriteLine("CWD " + name);
-            if (readLineWithCode("250"))
+            
+            // if host has change of directory, return true 
+            if (ReadLineWithCode("250"))
+            {
+                Console.WriteLine("Changing to directory " + name);
                 return true;
+            }
             return false;
         }
 
-        private bool readLineWithCode(string code, bool verbose = true)
+        private bool ReadLineWithCode(string code, bool verbose = true)
         {
             // return true if code found and streal read 
             // else return false if code wanted not found
@@ -217,14 +231,17 @@ namespace ClientFTP
             if (verbose)
                 Console.WriteLine(line);
             
-            
+            // if there is the wanted code --> continue, else return false
             if (line.Contains(code))
             {
+                // if there is '-' after the code, it mean there is a message on many lines
                 if (line.Contains(code + '-'))
                 {
                     line = _sr.ReadLine();
                     if (verbose)
                         Console.WriteLine(line);
+
+                    // while there is not the end code --> continue reading
                     while (!line.Contains(code))
                     {
                         line = _sr.ReadLine();
@@ -238,41 +255,48 @@ namespace ClientFTP
             {
                 return false;
             }
-
+            // read end
             return true;
         }
 
-        public bool quit()
-        {
-            _sw.WriteLine("QUIT");
+        public bool Disconnect()
+        { // diconnect client
 
-            if (this.readLineWithCode("221"))
+            _sw.WriteLine("QUIT");
+            // if close connextion it's ok
+            if (this.ReadLineWithCode("221"))
             {
-                Console.WriteLine("Deconnection ok");
+                Console.WriteLine("Disconnected");
                 return true;
             }
             else
-                Console.WriteLine("ER<RRRRRRRRRRRRRROORORO");
+                Console.WriteLine("Error in deconnection");
             return false;
         }
 
         public List<String> DownloadFile(string fileName)
         {
+            // reconnect to passive mode and create a new streamReader
             ReconnectToPassive();
             StreamReader sr = new StreamReader(_clientSocketPassive.GetStream(), Encoding.Default);
+            
+            // send command to download file
             _sw.WriteLine("RETR " + fileName);
             
+            // string list to get file content
             List<String> result = new List<string>();
 
-            if (readLineWithCode("150"))
+            // if download begin
+            if (ReadLineWithCode("150"))
             {
+                // get content until Stream will be closed
                 while (!sr.EndOfStream)
                 {
                     result.Add(sr.ReadLine());
                 }
             }
-
-            readLineWithCode("226");
+            // read "download completed
+            ReadLineWithCode("226");
             return result;
         }
     }
